@@ -1,0 +1,16 @@
+{
+  "name": "tennis-match",
+  "version": "1.0.0",
+  "description": "Tennis match server for RBI interview",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Evan Jacobson",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.5"
+  }
+}
