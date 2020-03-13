@@ -70,6 +70,13 @@ app.post('/reset', (req, res) => {
     console.log("Game has been manually reset");
     res.sendStatus(201);
 });
+
+app.get('/updateUI', function(req, res){
+  q.GetScore(function(items){
+      console.log(items);
+      res.send(items);
+  });
+});
         
 //function endGame()
 
