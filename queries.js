@@ -18,9 +18,18 @@ module.exports = {
     });
   },
   p1Score: function f2(callback){
-      
+      return MongoClient.connect('mongodb://localhost:27017/tennis', function(err,db){
+        if (err) {
+          return console.dir(err);  
+        }
+        collection = db.db('tennis').collection('games'); 
+          
   },
   p2Score: function f3(callback){
-      
+      return MongoClient.connect('mongodb://localhost:27017/tennis', function(err,db){
+        if (err) {
+          return console.dir(err);  
+        }
+        collection = db.db('tennis').collection('games');  
   }
 };
