@@ -24,7 +24,7 @@ MongoClient.connect(dbURL, (err, database) => {
   db = database.db('tennis');
     
 //reset the game
-  q.initialize_DB();
+  //q.initialize_DB();
     console.log("Game has been automatically reset");
  
   // start the express web server listening on 8080
@@ -52,6 +52,7 @@ app.post('/p1_clicked', (req, res) => {
         // CHECK IF WINNING SCORE, ELSE UPDATE SCORE & END GAME. 
        //console.log(items); 
     });
+    res.sendStatus(201);
 });
 
 app.post('/p2_clicked', (req, res) => {
@@ -60,12 +61,14 @@ app.post('/p2_clicked', (req, res) => {
     scorePoint("p2");   
        //console.log(items); 
     });
+    res.sendStatus(201);
     
 });
       
 app.post('/reset', (req, res) => {
     q.initialize_DB();
     console.log("Game has been manually reset");
+    res.sendStatus(201);
 });
         
 //function endGame()
@@ -75,6 +78,7 @@ function scorePoint(player){
         if(player == "p1"){
             //score a point
             q.p1Score(function(result){
+                console.log("P1 SCORED");
                 q.GetScore(function(game){
                     console.log(game);
                     if(game.p1_score > game.p2_score && game.p1_score > 3){    //win game
@@ -88,6 +92,7 @@ function scorePoint(player){
         }
         else{   //p2
             q.p2Score(function(result){
+                console.log("P2 SCORED");
                 q.GetScore(function(game){
                     console.log(game); 
                     if(game.p2_score > game.p1_score && game.p2_score > 3){    //win game
