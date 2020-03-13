@@ -4,7 +4,7 @@ var url = require('url');
             const express = require('express');
             const app = express();
 var game_num = 1;
-var set = 1;
+var set_no = 1;
 
 module.exports = {
     
@@ -15,7 +15,7 @@ module.exports = {
           return console.dir(err);  
         }
         game = db.db('tennis').collection('games');
-        game.find({"in_progress": true}).toArray(function (err, items) {
+        game.findOne({"in_progress": true},function (err, items) {
         return callback(items);     
       });
     });
@@ -30,16 +30,15 @@ module.exports = {
         collection = db.db('tennis').collection('games'); 
           const game = 
               {
-                set: set,
+                set: set_no,
                 game_no: game_num
               };
-          console.log("GAME: " + game);
 
-        collection.update(game, {$inc: {"p1_score":1} }, (err, result) => {
+        collection.updateOne(game, {$inc: {"p1_score":1} }, (err, result) => {
         if (err) {
           return console.log(err);
         }
-        console.log('Player 1 Score Updated');
+        return callback(result);
       });
   });
   },
@@ -53,15 +52,14 @@ module.exports = {
         collection = db.db('tennis').collection('games');  
         const game = 
           {
-            set: set,
+            set: set_no,
             game_no: game_num
           };
-console.log("TESTSREST");
-        collection.update(game, {$inc: {"p2_score":1} }, (err, result) => {
+        collection.updateOne(game, {$inc: {"p2_score":1} }, (err, result) => {
         if (err) {
           return console.log(err);
         }
-        console.log('Player 2 Score Updated');
+        return callback(result);
       });
   });
  },
@@ -92,7 +90,7 @@ console.log("TESTSREST");
         sets = db.db('tennis').collection('sets');
         sets.deleteMany({});
         const set = {
-            number: 1,
+            set: 1,
             p1_wins: 0,
             p2_wins: 0,
             in_progress: true
@@ -113,41 +111,40 @@ end_game: function f6(callback){
           return console.dir(err);  
         }
         game = db.db('tennis').collection('games');
-        const game = 
+        const gameType = 
               {
-                set: set,
+                set: set_no,
                 game_no: game_num
               };
         
         //update game
-        game.update(game, {"in_progress" : false}, (err, result) => {
+        game.updateOne(gameType,{"in_progress" : false}, function(err, result){
         if (err) {
           return console.log(err);
         }
         });
             
         //update set
-        set = db.db('tennis').collection('sets');
-        set.find({"set" : set}).toArray(function (err, items)/*).then(function(items)*/{
-            assert(items.length == 1);
-            item = items[0];
-            game.find({"set":set,"game":game}).toArray(function(err,gs)/*).then(function(gs)*/{
+        sett = db.db('tennis').collection('sets');
+        sett.findOne(gameType,function (err, items){
+            
+            game.findOne(gameType,function(err,gs){
                if(gs.p1_score > gs.p2_score){
                    //p1 wins
-                   set.update({"set":items.set},{$inc:{"p1_wins":1}});
+                   sett.updateOne(gameType,{$inc:{"p1_wins":1}});
                } 
                 else{
                     //p2 wins
-                    set.update({"set":items.set},{$inc:{"p2_wins":1}});
+                    sett.updateOne(gameType,{$inc:{"p2_wins":1}});
                 }
                 
             //check if end of set
-            if(set.p1_wins == 6 || set.p2_wins == 6){
+            if(sett.p1_wins == 6 || sett.p2_wins == 6){
                 //end the set
-                set.update({"set":items.set},{"in_progress":false});
+                sett.updateOne(gameType,{"in_progress":false});
                 //check if end of tournament
                 var endFlag = false;
-                set.count({"p1_wins":{$gt : "p2_wins"}, "in_progress":false}, function(err, count) {
+               /*****/ set.count(gameType,{"p1_wins":{$gt : "p2_wins"}, "in_progress":false}, function(err, count) {
                     if(count == 3){
                         //end game
                         console.log("END GAME HERE:::: P1 WINS!");
@@ -159,7 +156,7 @@ end_game: function f6(callback){
                     }
                 });
                 
-                set.count({"p2_wins":{$gt : "p1_wins"}, "in_progress":false}, function(err, count) {
+                sett.count(gameType,{"p2_wins":{$gt : "p1_wins"}, "in_progress":false}, function(err, count) {
                     if(count == 3){
                         //end game
                         console.log("END GAME HERE:::: P2 WINS!");
@@ -174,11 +171,11 @@ end_game: function f6(callback){
 
                 //else start new set... may be an issue with async
                 if(!endFlag){
-                   set.insertOne({$inc:{"set":1},"p1_wins":0,"p2_wins":0,"in_progress":true});
+                   sett.insertOne({$inc:{"set":1},"p1_wins":0,"p2_wins":0,"in_progress":true});
                 }
             }
             //else add new game
-            set.insertOne({"set":set,"p1_wins":0,"p2_wins:":0,"in_progress:":true}, (err, result) => {
+            sett.insertOne({"set":set_no,"p1_wins":0,"p2_wins:":0,"in_progress:":true}, (err, result) => {
                     if (err) {
                       return console.log(err);
                     }
@@ -201,7 +198,7 @@ add_game: function f7(callback){
         
         const score = 
           {
-            set: set,
+            set: set_no,
             game_no: ++game_num,
             p1_score: 0,
             p2_score: 0,

@@ -46,21 +46,19 @@ app.get('/', (req, res) => {
 app.post('/p1_clicked', (req, res) => {
     q.GetScore(function(items){         // PUT ALL LOGIC IN HERE
         //make sure only one game is in progress
-        assert(items.length == 1);
         scorePoint("p1");
         
         
         // CHECK IF WINNING SCORE, ELSE UPDATE SCORE & END GAME. 
-       console.log(items); 
+       //console.log(items); 
     });
 });
 
 app.post('/p2_clicked', (req, res) => {
     q.GetScore(function(items){         
     //make sure only one game is in progress
-    assert(items.length == 1);          
     scorePoint("p2");   
-       console.log(items); 
+       //console.log(items); 
     });
     
 });
@@ -73,37 +71,33 @@ app.post('/reset', (req, res) => {
 //function endGame()
 
 function scorePoint(player){
-    q.GetScore(function(items){         
-        //make sure only one game is in progress
-        assert(items.length == 1);
-        var game = items[0];
-        var p1_score = game.p1_score;
-        var p2_score = game.p2_score;
-        
-        console.log("p1_score: " + p1_score);
-        console.log("p2_score: " + p2_score);
-        
+
         if(player == "p1"){
-            if(p1_score > p2_score && p1_score >= 3){    //win game
-                q.p1Score();
-                q.end_game();
+            //score a point
+            q.p1Score(function(result){
+                q.GetScore(function(game){
+                    console.log(game);
+                    if(game.p1_score > game.p2_score && game.p1_score > 3){    //win game
+                        console.log("P1 WINS THE GAME");
+                        q.end_game();
+                    }
                 //add game if necessary
-            }
-            else{   //score a point
-                q.p1Score();
-            }
+                });
+            });
+            
         }
         else{   //p2
-            if(p2_score > p1_score && p2_score >= 3){    //win game
-                q.p1Score();
-                q.end_game();
+            q.p2Score(function(result){
+                q.GetScore(function(game){
+                    console.log(game); 
+                    if(game.p2_score > game.p1_score && game.p2_score > 3){    //win game
+                        console.log("P2 WINS THE GAME");
+                        q.end_game();
+                    }
                 //add game if necessary
-            }
-            else{ //score a point
-                q.p2Score();
-            }
+                });
+            });
         }
-    });
 }
 /*
 {
