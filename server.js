@@ -1,5 +1,5 @@
 console.log('Server-side code running');
-
+var assert = require('assert');
 var http = require('http');
 var url = require('url');
 const dbURL = 'mongodb://localhost:27017/tennis';
@@ -22,14 +22,16 @@ MongoClient.connect(dbURL, (err, database) => {
   }
 //create the db variable
   db = database.db('tennis');
-  // start the express web server listening on 8080
+    
+//reset the game
   q.initialize_DB();
+    console.log("Game has been automatically reset");
+ 
+  // start the express web server listening on 8080
   app.listen(8080, () => {
     console.log('TENNIS CONNECTED...listening on 8080');
   });
 });
-
-//q.DBConnect();
 
 // start the express web server listening on 8080
 //app.listen(8080, () => {
@@ -41,67 +43,74 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-//4 points wins game, win by 2
-//6 games wins the set
-//2 sets wins the match
-
-//GAME:
-/*
-
-{
-    set: set,
-    game_no: game_no,
-    p1_score: p1_score,
-    p2_score: p2_score,
-    in_progress: false,
-    complete: false 
-}
-
-*/
-
 app.post('/p1_clicked', (req, res) => {
     q.GetScore(function(items){         // PUT ALL LOGIC IN HERE
-       if(items.count() == 0){
-           
-       }                              // CHECK IF WINNING SCORE, ELSE UPDATE SCORE & END GAME. 
+        //make sure only one game is in progress
+        assert(items.length == 1);
+        scorePoint("p1");
+        
+        
+        // CHECK IF WINNING SCORE, ELSE UPDATE SCORE & END GAME. 
        console.log(items); 
     });
-    
-  //const click = {clickTime: "Time: " + new Date()};
-    
-    //working query
-                    //  db.collection('games').findOne({}, function(err, result){
-                    //      if (err) throw err;
-                    //      time = result.clickTime;
-                    //      console.log(time);
-                    //  }).then;
-           
-    
-//  db.collection('games').insertOne(click, (err, result) => {
-//    if (err) {
-//      return console.log(err);
-//    }
-//    console.log('click added to db');
-//    res.sendStatus(201);
-//  });
 });
 
 app.post('/p2_clicked', (req, res) => {
-    q.GetScore(function(items){         // PUT ALL LOGIC IN HERE
-                                        // CHECK IF WINNING SCORE, ELSE UPDATE SCORE & END GAME. 
-                                        // 
+    q.GetScore(function(items){         
+    //make sure only one game is in progress
+    assert(items.length == 1);          
+    scorePoint("p2");   
        console.log(items); 
     });
     
 });
       
 app.post('/reset', (req, res) => {
-    q.GetScore(function(items){         // PUT ALL LOGIC IN HERE
-                                        // CHECK IF WINNING SCORE, ELSE UPDATE SCORE & END GAME. 
-                                        // 
-       console.log(items); 
-    });
-    
+    q.initialize_DB();
+    console.log("Game has been manually reset");
 });
         
+//function endGame()
 
+function scorePoint(player){
+    q.GetScore(function(items){         
+        //make sure only one game is in progress
+        assert(items.length == 1);
+        var game = items[0];
+        var p1_score = game.p1_score;
+        var p2_score = game.p2_score;
+        
+        console.log("p1_score: " + p1_score);
+        console.log("p2_score: " + p2_score);
+        
+        if(player == "p1"){
+            if(p1_score > p2_score && p1_score >= 3){    //win game
+                q.p1Score();
+                q.end_game();
+                //add game if necessary
+            }
+            else{   //score a point
+                q.p1Score();
+            }
+        }
+        else{   //p2
+            if(p2_score > p1_score && p2_score >= 3){    //win game
+                q.p1Score();
+                q.end_game();
+                //add game if necessary
+            }
+            else{ //score a point
+                q.p2Score();
+            }
+        }
+    });
+}
+/*
+{
+    set: 1,
+    game_no: 1,
+    p1_score: 0,
+    p2_score: 0,
+    in_progress: true,
+  };
+*/

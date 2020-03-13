@@ -21,7 +21,7 @@ const p2_button = document.getElementById('p2_score_btn');
 p2_button.addEventListener('click', function(e) {
   console.log('Player 2 scored');
 
-  fetch('/p1_clicked', {method: 'POST'})
+  fetch('/p2_clicked', {method: 'POST'})
     .then(function(response) {
       if(response.ok) {
         console.log('Player 2\'s score was updated');
@@ -38,7 +38,7 @@ const reset_button = document.getElementById('reset');
 reset_button.addEventListener('click', function(e) {
   console.log('Reset Scores');
 
-  fetch('/p1_clicked', {method: 'POST'})
+  fetch('/reset', {method: 'POST'})
     .then(function(response) {
       if(response.ok) {
         console.log('Scores were reset');
