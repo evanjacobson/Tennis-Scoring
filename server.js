@@ -24,7 +24,7 @@ MongoClient.connect(dbURL, (err, database) => {
   db = database.db('tennis');
     
 //reset the game
-  //q.initialize_DB();
+  q.initialize_DB();
     console.log("Game has been automatically reset");
  
   // start the express web server listening on 8080
@@ -33,34 +33,18 @@ MongoClient.connect(dbURL, (err, database) => {
   });
 });
 
-// start the express web server listening on 8080
-//app.listen(8080, () => {
-//  console.log('listening on 8080');
-//});
-
 // serve the homepage
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
 app.post('/p1_clicked', (req, res) => {
-    q.GetScore(function(items){         // PUT ALL LOGIC IN HERE
-        //make sure only one game is in progress
-        scorePoint("p1");
-        
-        
-        // CHECK IF WINNING SCORE, ELSE UPDATE SCORE & END GAME. 
-       //console.log(items); 
-    });
+    scorePoint("p1");
     res.sendStatus(201);
 });
 
 app.post('/p2_clicked', (req, res) => {
-    q.GetScore(function(items){         
-    //make sure only one game is in progress
     scorePoint("p2");   
-       //console.log(items); 
-    });
     res.sendStatus(201);
     
 });
@@ -87,8 +71,6 @@ app.get('/updateUI', function(req, res){
     });
 });
         
-//function endGame()
-
 function scorePoint(player){
 
         if(player == "p1"){
