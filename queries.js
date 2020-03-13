@@ -28,13 +28,8 @@ module.exports = {
           return console.dir(err);  
         }
         collection = db.db('tennis').collection('games'); 
-          const game = 
-              {
-                set: set_no,
-                game_no: game_num
-              };
 
-        collection.updateOne(game, {$inc: {"p1_score":1} }, (err, result) => {
+        collection.updateOne({"in_progress":true}, {$inc: {"p1_score":1} }, (err, result) => {
         if (err) {
           return console.log(err);
         }
@@ -50,12 +45,8 @@ module.exports = {
           return console.dir(err);  
         }
         collection = db.db('tennis').collection('games');  
-        const game = 
-          {
-            set: set_no,
-            game_no: game_num
-          };
-        collection.updateOne(game, {$inc: {"p2_score":1} }, (err, result) => {
+      
+        collection.updateOne({"in_progress":true}, {$inc: {"p2_score":1} }, (err, result) => {
         if (err) {
           return console.log(err);
         }
@@ -116,35 +107,26 @@ end_game: function f6(callback){
                 set: set_no,
                 game_no: game_num
               };
-        
-        //update game
-        game.updateOne(gameType,{"in_progress" : false}, function(err, result){
-        if (err) {
-          return console.log(err);
-        }
-        });
             
         //update set
-        sett = db.db('tennis').collection('sets');
-        sett.findOne(gameType,function (err, items){
-            
-            game.findOne(gameType,function(err,gs){
+        const sett = db.db('tennis').collection('sets');
+        sett.findOne({"in_progress":true},function (err, items){
+            game.findOne({"in_progress":true},function(err,gs){
                if(gs.p1_score > gs.p2_score){
                    //p1 wins
-                   sett.updateOne(gameType,{$inc:{"p1_wins":1}});
+                   sett.updateOne({"in_progress":true},{$inc:{"p1_wins":1}});
                } 
                 else{
                     //p2 wins
-                    sett.updateOne(gameType,{$inc:{"p2_wins":1}});
+                    sett.updateOne({"in_progress":true},{$inc:{"p2_wins":1}});
                 }
                 
             //check if end of set
-            if(sett.p1_wins == 6 || sett.p2_wins == 6){
+            if(items.p1_wins == 6 || items.p2_wins == 6){
                 //end the set
-                sett.updateOne(gameType,{"in_progress":false});
+                sett.updateOne({"in_progress":true},{$set:{"in_progress":false}});
                 //check if end of tournament
-                var endFlag = false;
-               /*****/ set.count(gameType,{"p1_wins":{$gt : "p2_wins"}, "in_progress":false}, function(err, count) {
+               /*****/ sett.findOne({"p1_wins":{$gt : "p2_wins"}, "in_progress":false}).count(function(err, count) {
                     if(count == 3){
                         //end game
                         console.log("END GAME HERE:::: P1 WINS!");
@@ -152,11 +134,13 @@ end_game: function f6(callback){
                         console.log("END GAME HERE:::: P1 WINS!");
                         console.log("END GAME HERE:::: P1 WINS!");
                         console.log("END GAME HERE:::: P1 WINS!");
-                        endFlag = true;
                     }
+                   else{
+                       sett.insertOne({$inc:{"set":1},"p1_wins":0,"p2_wins":0,"in_progress":true});
+                   }
                 });
                 
-                sett.count(gameType,{"p2_wins":{$gt : "p1_wins"}, "in_progress":false}, function(err, count) {
+                /*****/ sett.findOne({"p2_wins":{$gt : "p1_wins"}, "in_progress":false}).count(function(err, count) {
                     if(count == 3){
                         //end game
                         console.log("END GAME HERE:::: P2 WINS!");
@@ -164,27 +148,30 @@ end_game: function f6(callback){
                         console.log("END GAME HERE:::: P2 WINS!");
                         console.log("END GAME HERE:::: P2 WINS!");
                         console.log("END GAME HERE:::: P2 WINS!");
-                        endFlag = true;
+                    }
+                    else{
+                        sett.insertOne({$inc:{"set":1},"p1_wins":0,"p2_wins":0,"in_progress":true});
                     }
                 });
           
 
                 //else start new set... may be an issue with async
-                if(!endFlag){
-                   sett.insertOne({$inc:{"set":1},"p1_wins":0,"p2_wins":0,"in_progress":true});
-                }
             }
             //else add new game
-            sett.insertOne({"set":set_no,"p1_wins":0,"p2_wins:":0,"in_progress:":true}, (err, result) => {
+           //else{
+               //update game
+        game.updateOne({"in_progress":true}, {$set:{"in_progress" : false}});
+                game.insertOne({"set":set_no,"game_no":++game_num,"p1_score":0,"p2_score":0,"in_progress":true}, (err, result) => {
                     if (err) {
                       return console.log(err);
                     }
                     console.log('NEW GAME ADDED');
                   });
+           //}
             //});
         });
                                   
-        console.log('GAME ENDED');
+        console.log('GAME ENDED'); 
       });
   });
 },
