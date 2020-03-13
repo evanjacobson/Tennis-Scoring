@@ -81,7 +81,7 @@ function scorePoint(player){
                 console.log("P1 SCORED");
                 q.GetScore(function(game){
                     console.log(game);
-                    if(game.p1_score > game.p2_score && game.p1_score > 3){    //win game
+                    if(game.p1_score > game.p2_score && game.p1_score > 3 && game.p1_score-game.p2_score > 1){    //win game
                         console.log("P1 WINS THE GAME");
                         q.end_game();
                     }
@@ -95,7 +95,7 @@ function scorePoint(player){
                 console.log("P2 SCORED");
                 q.GetScore(function(game){
                     console.log(game); 
-                    if(game.p2_score > game.p1_score && game.p2_score > 3){    //win game
+                    if(game.p2_score > game.p1_score && game.p2_score > 3 && game.p2_score-game.p1_score > 1){    //win game
                         console.log("P2 WINS THE GAME");
                         q.end_game();
                     }
