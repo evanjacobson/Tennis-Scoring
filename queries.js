@@ -97,6 +97,15 @@ module.exports = {
       });
           game_num = 1;
           set_no = 1;
+          
+        tournament = db.db('tennis').collection('tournament');
+        tournament.deleteMany({});
+        tournament.insertOne({"p1_sets_won":0,"p2_sets_won":0}, (err, result) => {
+        if (err) {
+          return console.log(err);
+        }
+        });
+          
         console.log('DATABASE INITIALIZED');
           
   });
@@ -155,9 +164,16 @@ end_game: function f7(callback){
                 if(err2){
                     console.error(err2);
                 }
-                console.log(items);
+
             //check if end of set
             if(items.p1_wins > 5 || items.p2_wins > 5){
+                tournament = db.db('tennis').collection('tournament');
+                if(items.p1_wins > items.p2_wins){
+                    tournament.updateOne({},{$inc:{"p1_sets_won":1}});
+                }
+                else if(items.p2_wins > items.p1_wins){
+                    tournament.updateOne({},{$inc:{"p2_sets_won":1}});
+                }
                 //end the set
                 sett.updateOne(currentType,{$set:{"in_progress":false}});
                 new_set_num = items.set + 1;
@@ -165,48 +181,86 @@ end_game: function f7(callback){
                 sett.insertOne({"set":new_set_num,"p1_wins":0,"p2_wins":0,"in_progress":true});
                 game_num = 0;
                 
-                //check if end of tournament
-                if(items.p1_wins > items.p2_wins){
-                    if(count == 3){
-                        //end game
+                game.updateOne(currentType, {$set:{"in_progress" : false}});
+                game.insertOne({
+                        set: new_set_num,
+                        game_no: ++game_num,
+                        p1_score: 0,
+                        p2_score: 0,
+                        in_progress: true,
+                    });
+                
+                //query to determine if tournament is over
+                tournament.findOne({$or: [{"p1_sets_won":2},{"p2_sets_won":2}]}, function(err,val){
+                   if(val){
+                       console.log(val);
+                       if(val.p1_sets_won == 2){
+                           //end game
                         console.log("END GAME HERE:::: P1 WINS!");
                         console.log("END GAME HERE:::: P1 WINS!");
                         console.log("END GAME HERE:::: P1 WINS!");
                         console.log("END GAME HERE:::: P1 WINS!");
                         console.log("END GAME HERE:::: P1 WINS!");
-                        return;
-                    }
-                }
-               else if(items.p2_wins > items.p1_wins){
-                   if(count == 3){
-                        //end game
+                       }
+                       else{
+                           console.log("END GAME HERE:::: P2 WINS!");
                         console.log("END GAME HERE:::: P2 WINS!");
                         console.log("END GAME HERE:::: P2 WINS!");
                         console.log("END GAME HERE:::: P2 WINS!");
                         console.log("END GAME HERE:::: P2 WINS!");
-                        console.log("END GAME HERE:::: P2 WINS!");
-                        return;
-                    }
-               }
+                       }
+                   }
+                    
+                });
+//                //check if end of tournament
+//                if(items.p1_wins > items.p2_wins){
+//                    if(count == 3){
+//                        //end game
+//                        console.log("END GAME HERE:::: P1 WINS!");
+//                        console.log("END GAME HERE:::: P1 WINS!");
+//                        console.log("END GAME HERE:::: P1 WINS!");
+//                        console.log("END GAME HERE:::: P1 WINS!");
+//                        console.log("END GAME HERE:::: P1 WINS!");
+//                        return;
+//                    }
+//                }
+//               else if(items.p2_wins > items.p1_wins){
+//                   if(count == 3){
+//                        //end game
+//                        console.log("END GAME HERE:::: P2 WINS!");
+//                        console.log("END GAME HERE:::: P2 WINS!");
+//                        console.log("END GAME HERE:::: P2 WINS!");
+//                        console.log("END GAME HERE:::: P2 WINS!");
+//                        console.log("END GAME HERE:::: P2 WINS!");
+//                        return;
+//                    }
+//               }
             }
                 else{ //not end of tournament
-                  
+                   game.updateOne(currentType, {$set:{"in_progress" : false}});
+                   game.insertOne({
+                            set: set_no,
+                            game_no: ++game_num,
+                            p1_score: 0,
+                            p2_score: 0,
+                            in_progress: true,
+                        });
                 }
                 
-               });
+//               });
                 
                 //else start new set... may be an issue with async
             //else add new game
            //else{
                //update game
-        game.updateOne(currentType, {$set:{"in_progress" : false}});
-            game.insertOne({
-                set: set_no,
-                game_no: ++game_num,
-                p1_score: 0,
-                p2_score: 0,
-                in_progress: true,
-            });
+//        game.updateOne(currentType, {$set:{"in_progress" : false}});
+//        game.insertOne({
+//                set: set_no,
+//                game_no: ++game_num,
+//                p1_score: 0,
+//                p2_score: 0,
+//                in_progress: true,
+//            });
                 
             });
                 
@@ -214,7 +268,7 @@ end_game: function f7(callback){
 
                 
            //}
-            //});
+            });
 
                                   
         console.log('GAME ENDED'); 
