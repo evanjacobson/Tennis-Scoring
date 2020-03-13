@@ -73,9 +73,18 @@ app.post('/reset', (req, res) => {
 
 app.get('/updateUI', function(req, res){
   q.GetScore(function(items){
-      console.log(items);
-      res.send(items);
-  });
+  tournament = db.collection('tournament');
+    tournament.findOne({}, function(err,val){
+        set = db.collection('sets').findOne({"in_progress":true},function(err,setInfo){
+        response = {
+            "game":items,
+            "set":setInfo,
+            "tournament":val
+        };
+        res.json(response);
+            });
+          });
+    });
 });
         
 //function endGame()

@@ -212,29 +212,6 @@ end_game: function f7(callback){
                    }
                     
                 });
-//                //check if end of tournament
-//                if(items.p1_wins > items.p2_wins){
-//                    if(count == 3){
-//                        //end game
-//                        console.log("END GAME HERE:::: P1 WINS!");
-//                        console.log("END GAME HERE:::: P1 WINS!");
-//                        console.log("END GAME HERE:::: P1 WINS!");
-//                        console.log("END GAME HERE:::: P1 WINS!");
-//                        console.log("END GAME HERE:::: P1 WINS!");
-//                        return;
-//                    }
-//                }
-//               else if(items.p2_wins > items.p1_wins){
-//                   if(count == 3){
-//                        //end game
-//                        console.log("END GAME HERE:::: P2 WINS!");
-//                        console.log("END GAME HERE:::: P2 WINS!");
-//                        console.log("END GAME HERE:::: P2 WINS!");
-//                        console.log("END GAME HERE:::: P2 WINS!");
-//                        console.log("END GAME HERE:::: P2 WINS!");
-//                        return;
-//                    }
-//               }
             }
                 else{ //not end of tournament
                    game.updateOne(currentType, {$set:{"in_progress" : false}});

@@ -3,18 +3,58 @@
     <head>
         <meta charset="utf-8">
         <title>Tennis Match - Evan Jacobson</title>
+        <style>
+            td{
+                text-align: center;
+            }
+            table{
+                border: 2px solid black;
+            }
+            #buttons{
+                display: inline-block;
+                padding: 10px 30px 10px 10px;
+                
+            }
+        </style>
     </head>
     <body>
-        <h1>Tennis Match - Evan Jacobson</h1>
-        <div>Player 1</div><div id="p1_score">${player1Score}</div>
-        <div>Player 2</div><div id="p2_score">${player2Score}</div>
+        <h2>Tennis Match - Evan Jacobson</h2>
+        
+        <div>
+        <h3 style="text-align: center">Tournament Highlights</h3>
+        <table style="width:50%; margin: auto">
+        <tr>
+            <th></th>
+            <th>Games Won (in Set <span id="current_set_tbl">1</span>)</th>    
+            <th>Sets Won</th>    
+        </tr>
+        <tr>
+            <th>Player 1</th>  
+            <td id="p1_games_won">0</td>
+            <td id="p1_sets_won">0</td>
+        </tr>
+        <tr>
+            <th>Player 2</th>  
+            <td id="p2_games_won">0</td>
+            <td id="p2_sets_won">0</td>
+        </tr>
+        
+        </table>  
+        </div>
+        
+        <h3>Currently Playing: Game <span id="current_game">1</span> of Set <span id="current_set_lbl">1</span></h3>
+        
+        <div class="player_score">Player 1: <span id="p1_score"></span></div>
+            <div class="player_score">Player 2: <span id="p2_score"></span></div>
 
         <div id="winner">Player ${playerThatWon} won!</div>
 
-        <button id="p1_score_btn">Player 1 scored</button>
-        <button id="p2_score_btn">Player 2 scored</button>
-
+    <div id="buttons">
+        <button class="score_btn" id="p1_score_btn">Player 1 scored</button>
+        <button class="score_btn" id="p2_score_btn">Player 2 scored</button>
         <button id="reset">Reset Game</button>
+    </div>
+        
 
     </body>
     <script src="client.js"></script>
