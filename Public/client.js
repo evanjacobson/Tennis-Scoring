@@ -84,8 +84,10 @@ setInterval(function(){
        document.getElementById("current_game").innerHTML = game_num;
        
     //update score
-      document.getElementById("p1_score").innerHTML = p1_score;
-      document.getElementById("p2_score").innerHTML = p2_score;
+      score = determineScore(p1_score,p2_score);
+       console.log(score);
+      document.getElementById("p1_score").innerHTML = score.p1;
+      document.getElementById("p2_score").innerHTML = score.p2;
        
     //update leaderboard
        //games
@@ -122,4 +124,45 @@ function disableBtns(){
 function enableBtns(){
     document.getElementById("p1_score_btn").disabled = false;
     document.getElementById("p2_score_btn").disabled = false;
+}
+
+function determineScore(p1,p2){
+    p1_str="love",p2_str="love";
+    
+    p2_str = scoreHelper(p2,p1);
+    
+    if(p1 == p2){
+        if(p1 == 0)
+            return {p1:"love",p2:"love"};
+        else{
+            p2_str = "all";
+        }
+    }
+    
+    p1_str = scoreHelper(p1,p2);
+
+    return {p1:p1_str,p2:p2_str};
+}
+
+function scoreHelper(p1,p2){
+    switch(p1){
+        case 0:
+            return "love";
+        case 1:
+            return "15";
+        case 2:
+            return "30";
+        case 3:
+            return "40";
+        default:
+            if(p1 > p2 && p1-p2 > 1) { // p1 wins
+                return "GAME";
+            }
+            else if(p1 > p2 && p1-p2 == 1) { //p1 has advantage
+                return "ADVANTAGE";
+            }
+            else {                       //
+                return "40";
+            }
+    }
 }

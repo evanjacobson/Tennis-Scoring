@@ -83,7 +83,6 @@ function scorePoint(player){
                         console.log("P1 WINS THE GAME");
                         q.end_game();
                     }
-                //add game if necessary
                 });
             });
             
@@ -97,17 +96,7 @@ function scorePoint(player){
                         console.log("P2 WINS THE GAME");
                         q.end_game();
                     }
-                //add game if necessary
                 });
             });
         }
 }
-/*
-{
-    set: 1,
-    game_no: 1,
-    p1_score: 0,
-    p2_score: 0,
-    in_progress: true,
-  };
-*/
