@@ -21,6 +21,17 @@ module.exports = {
     });
   },
     
+  GetArchivedGame: function arc(setnum,gamenum,callback){
+      return MongoClient.connect('mongodb://localhost:27017/tennis', function(err,db){
+        if (err) {
+          return console.dir(err);  
+        }
+        game = db.db('tennis').collection('games');
+        game.findOne({"set":setnum,"game_no":gamenum},function (err, items) {
+            return  callback(items);     
+      });
+    });
+  },
     
   p1Score: function f2(callback){
       return MongoClient.connect('mongodb://localhost:27017/tennis', function(err,db){
@@ -33,8 +44,7 @@ module.exports = {
         if (err) {
           return console.log(err);
         }
-        console.log("updating p2score");
-        return callback(result);
+        return callback(result.result.ok);
       });
   });
   },
@@ -51,7 +61,6 @@ module.exports = {
         if (err) {
           return console.log(err);
         }
-        console.log("updating p2score");
         return callback(result);
       });
   });
@@ -161,6 +170,9 @@ end_game: function f5(callback){
                 
               //query to determine if tournament is over
                 tournament.findOne({$or: [{"p1_sets_won":2},{"p2_sets_won":2}]}, function(err,val){
+                    //end the  current game and set
+                    sett.updateOne(currentType,{$set:{"in_progress":false}});
+                    game.updateOne(currentType, {$set:{"in_progress" : false}});
                    if(val == null){
                        sett.insertOne({"set":new_set_num,"p1_wins":0,"p2_wins":0,"in_progress":true});
                        game.insertOne({
@@ -170,9 +182,7 @@ end_game: function f5(callback){
                         p2_score: 0,
                         in_progress: true,
                     });    
-                       //end the game and set
-                        sett.updateOne(currentType,{$set:{"in_progress":false}});
-                        game.updateOne(currentType, {$set:{"in_progress" : false}});
+                       
                    }
                     //else do not end the games. this is just for display purposes
                 });  

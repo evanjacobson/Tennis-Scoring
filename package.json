@@ -4,13 +4,19 @@
   "description": "Tennis match server for RBI interview",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "Evan Jacobson",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "chai-http": "^4.3.0",
     "express": "^4.17.1",
     "mongodb": "^3.5.5"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.1.0",
+    "mocha-sinon": "^2.1.0"
   }
 }

@@ -44,19 +44,19 @@ app.get('/', (req, res) => {
 
 app.post('/p1_clicked', (req, res) => {
     scorePoint("p1");
-    res.sendStatus(201);
+    res.sendStatus(200);
 });
 
 app.post('/p2_clicked', (req, res) => {
     scorePoint("p2");   
-    res.sendStatus(201);
+    res.sendStatus(200);
 });
       
 app.post('/reset', (req, res) => {
     q.initialize_DB(function(result){
         if(result.insertedCount == 1){
             console.log("Game has been manually reset");
-            res.sendStatus(201);
+            res.sendStatus(200);
         }
     });
 });
