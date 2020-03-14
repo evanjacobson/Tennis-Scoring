@@ -87,7 +87,7 @@ module.exports = {
             p1_wins: 0,
             p2_wins: 0,
             in_progress: true
-        }
+        };
         sets.insertOne(set, (err, result) => {
         if (err) {
           return console.log(err);
@@ -102,11 +102,12 @@ module.exports = {
             "p1_sets_won":0,
             "p2_sets_won":0
         };
-        tournament.insertOne(tourney, (err, result) => {
+          
+        tournament.insertOne(tourney, function(err, result){
         if (err) {
           return console.log(err);
         }
-        return callback(result);
+            return callback(result);
         });
           
         console.log('DATABASE INITIALIZED');
@@ -143,7 +144,7 @@ end_game: function f5(callback){
     
 
             //check if end of set
-            if(items.p1_wins > 5 || items.p2_wins > 5){
+            if((items.p1_wins > 5 || items.p2_wins > 5) && Math.abs(items.p1_wins-items.p2_wins) > 1){
                 tournament = db.db('tennis').collection('tournament');
                 if(items.p1_wins > items.p2_wins){
                     tournament.updateOne({},{$inc:{"p1_sets_won":1}});

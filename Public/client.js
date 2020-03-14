@@ -46,7 +46,7 @@ reset_button.addEventListener('click', function(e) {
       if(response.ok) {
         console.log('Scores were reset');
         enableBtns();
-        startUI();
+        setDefaultUI();          
         return;
       }
       throw new Error('Request failed.');
@@ -168,4 +168,17 @@ function scoreHelper(p1,p2){
                 return "40";
             }
     }
+}
+
+function setDefaultUI(){
+    document.getElementById("p1_score").innerHTML = "love";
+        document.getElementById("p2_score").innerHTML = "love";
+        document.getElementById("p1_games_won").innerHTML = 0;
+        document.getElementById("p2_games_won").innerHTML = 0;
+        document.getElementById("p1_sets_won").innerHTML = 0;
+        document.getElementById("p2_sets_won").innerHTML = 0;
+        document.getElementById("current_set_tbl").innerHTML = 1;
+        document.getElementById("current_set_lbl").innerHTML = 1;
+        document.getElementById("current_game").innerHTML = 1;
+        enableBtns();
 }

@@ -50,13 +50,14 @@ app.post('/p1_clicked', (req, res) => {
 app.post('/p2_clicked', (req, res) => {
     scorePoint("p2");   
     res.sendStatus(201);
-    
 });
       
 app.post('/reset', (req, res) => {
     q.initialize_DB(function(result){
-        console.log("Game has been manually reset");
-    res.sendStatus(201);
+        if(result.insertedCount == 1){
+            console.log("Game has been manually reset");
+            res.sendStatus(201);
+        }
     });
 });
 
@@ -75,9 +76,8 @@ app.get('/updateUI', function(req, res){
           });
     });
 });
-        
+ 
 function scorePoint(player){
-
         if(player == "p1"){
             //score a point
             q.p1Score(function(result){
