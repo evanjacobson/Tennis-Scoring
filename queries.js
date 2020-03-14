@@ -34,7 +34,6 @@ module.exports = {
           return console.log(err);
         }
         console.log("updating p2score");
-           // db.close();
         return callback(result);
       });
   });
@@ -53,7 +52,6 @@ module.exports = {
           return console.log(err);
         }
         console.log("updating p2score");
-            //db.close();
         return callback(result);
       });
   });
@@ -108,6 +106,7 @@ module.exports = {
         if (err) {
           return console.log(err);
         }
+        return callback(result);
         });
           
         console.log('DATABASE INITIALIZED');
