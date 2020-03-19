@@ -14,7 +14,8 @@ module.exports = {
         if (err) {
           return console.dir(err);  
         }
-        game = db.db('tennis').collection('games');
+        var tennis = db.db('tennis');
+        game = tennis.collection('games');
         game.findOne({"in_progress": true},function (err, items) {
             return  callback(items);     
       });
@@ -59,7 +60,7 @@ module.exports = {
       
         collection.updateOne({"in_progress":true}, {$inc: {"p2_score":1} }, (err, result) => {
         if (err) {
-          return console.log(err);
+          return console.log(err + " P2SCORE");
         }
         return callback(result);
       });
@@ -72,7 +73,8 @@ module.exports = {
         if (err) {
           return console.dir(err);  
         }
-        games = db.db('tennis').collection('games');
+        t = db.db('tennis');
+        games = t.collection('games');
         games.deleteMany({});
         const score = 
               {
@@ -89,7 +91,7 @@ module.exports = {
         }
         });
             
-        sets = db.db('tennis').collection('sets');
+        sets = t.collection('sets');
         sets.deleteMany({});
         const set = {
             set: 1,
@@ -105,7 +107,7 @@ module.exports = {
           game_num = 1;
           set_no = 1;
           
-        tournament = db.db('tennis').collection('tournament');
+        tournament = t.collection('tournament');
         tournament.deleteMany({});
         const tourney = {
             "p1_sets_won":0,
@@ -118,6 +120,11 @@ module.exports = {
         }
             return callback(result);
         });
+
+        if(tournament == null || games == null || sets == null){
+          console.error("ERROR: ONE OR MORE COLLECTIONS DO NOT EXIST");
+          f4(this);
+        }
           
         console.log('DATABASE INITIALIZED');
           
@@ -150,8 +157,6 @@ end_game: function f5(callback){
                     console.error(err2);
                 }
                 
-    
-
             //check if end of set
             if((items.p1_wins > 5 || items.p2_wins > 5) && Math.abs(items.p1_wins-items.p2_wins) > 1){
                 tournament = db.db('tennis').collection('tournament');
@@ -205,5 +210,6 @@ end_game: function f5(callback){
                                   
         console.log('GAME ENDED'); 
       });
-}
+  }
 };
+

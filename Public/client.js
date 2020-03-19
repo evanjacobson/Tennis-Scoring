@@ -27,7 +27,6 @@ p2_button.addEventListener('click', function(e) {
     .then(function(response) {
       if(response.ok) {
         console.log('Player 2\'s score was updated');
-        
         return;
       }
       throw new Error('Request failed.');
@@ -39,6 +38,10 @@ p2_button.addEventListener('click', function(e) {
 
 const reset_button = document.getElementById('reset');
 reset_button.addEventListener('click', function(e) {
+  clientReset();
+});
+
+function clientReset(){
   console.log('Reset Scores');
  stopUI();
   fetch('/reset', {method: 'POST'})
@@ -54,7 +57,7 @@ reset_button.addEventListener('click', function(e) {
     .catch(function(error) {
       console.log(error);
     });
-});
+}
 
 var UI_Updater;
 function startUI(){
@@ -68,46 +71,55 @@ function startUI(){
            game = res.game;
            tournament = res.tournament;
            set = res.set;
-          var p1_score = game.p1_score;
-          var p2_score = game.p2_score;
-          var p1_games_won = set.p1_wins;
-          var p2_games_won = set.p2_wins;
-          var set_num = game.set;
-          var game_num = game.game_no;
-          var p1_sets_won = tournament.p1_sets_won;
-          var p2_sets_won = tournament.p2_sets_won;
 
-        //update game and set numbers
-           document.getElementById("current_set_tbl").innerHTML = set_num;
-           document.getElementById("current_set_lbl").innerHTML = set_num;
-           document.getElementById("current_game").innerHTML = game_num;
-
-        //update score
-          score = determineScore(p1_score,p2_score);
-          document.getElementById("p1_score").innerHTML = score.p1;
-          document.getElementById("p2_score").innerHTML = score.p2;
-
-        //update leaderboard
-           //games
-        document.getElementById("p1_games_won").innerHTML = p1_games_won;
-        document.getElementById("p2_games_won").innerHTML = p2_games_won;
-           //sets
-        document.getElementById("p1_sets_won").innerHTML = p1_sets_won;
-        document.getElementById("p2_sets_won").innerHTML = p2_sets_won;
-
-        //update winner if applicable
-          if(tournament.p1_sets_won == 2){
-              document.getElementById("winner").innerHTML = "<h3>Game Over! Player 1 Won the Tournament!</h3>";
-              disableBtns();
-          }
-          else if(tournament.p2_sets_won == 2){
-              document.getElementById("winner").innerHTML = "<h3>Game Over! Player 2 Won the Tournament!</h3>";
-              disableBtns();
-          }
-           else{
-               document.getElementById("winner").innerHTML = "";
+           if(game == null || tournament == null || set == null){
+               console.log("Database error could not be resolved. Restarting server");
+               alert("Database error. Something went wrong with the database reset.");
+               disableBtns();
+               clientReset();
            }
-
+           else{
+             enableBtns();
+            var p1_score = game.p1_score;
+            var p2_score = game.p2_score;
+            var p1_games_won = set.p1_wins;
+            var p2_games_won = set.p2_wins;
+            var set_num = game.set;
+            var game_num = game.game_no;
+            var p1_sets_won = tournament.p1_sets_won;
+            var p2_sets_won = tournament.p2_sets_won;
+  
+          //update game and set numbers
+             document.getElementById("current_set_tbl").innerHTML = set_num;
+             document.getElementById("current_set_lbl").innerHTML = set_num;
+             document.getElementById("current_game").innerHTML = game_num;
+  
+          //update score
+            score = determineScore(p1_score,p2_score);
+            document.getElementById("p1_score").innerHTML = score.p1;
+            document.getElementById("p2_score").innerHTML = score.p2;
+  
+          //update leaderboard
+             //games
+          document.getElementById("p1_games_won").innerHTML = p1_games_won;
+          document.getElementById("p2_games_won").innerHTML = p2_games_won;
+             //sets
+          document.getElementById("p1_sets_won").innerHTML = p1_sets_won;
+          document.getElementById("p2_sets_won").innerHTML = p2_sets_won;
+  
+          //update winner if applicable
+            if(tournament.p1_sets_won == 2){
+                document.getElementById("winner").innerHTML = "<h3>Game Over! Player 1 Won the Tournament!</h3>";
+                disableBtns();
+            }
+            else if(tournament.p2_sets_won == 2){
+                document.getElementById("winner").innerHTML = "<h3>Game Over! Player 2 Won the Tournament!</h3>";
+                disableBtns();
+            }
+             else{
+                 document.getElementById("winner").innerHTML = "";
+             }
+           }
         })
         .catch(function(error) {
           console.log(error);

@@ -3,14 +3,16 @@ var assert = require('assert');
 var http = require('http');
 var url = require('url');
 const dbURL = 'mongodb://localhost:27017/tennis';
-            const express = require('express');
+const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
-            const app = express();
+const app = express();
 
 var q = require('./queries.js');
 
-            // serve files from the public directory
-            app.use(express.static('public'));
+
+
+// serve files from the public directory
+app.use(express.static('public'));
 
 // connect to the db and start the express server
 let db;
@@ -46,6 +48,11 @@ app.post('/p1_clicked', (req, res) => {
     scorePoint("p1");
     res.sendStatus(200);
 });
+
+app.post('/restart', (req,res) => {
+    process.exit(1);
+});
+
 
 app.post('/p2_clicked', (req, res) => {
     scorePoint("p2");   
@@ -83,23 +90,42 @@ function scorePoint(player){
             q.p1Score(function(result){
                 console.log("P1 SCORED");
                 q.GetScore(function(game){
-                    if(game.p1_score > game.p2_score && game.p1_score > 3 && game.p1_score-game.p2_score > 1){    //win game
-                        console.log("P1 WINS THE GAME");
-                        q.end_game();
+                    try{
+                        if(game == null){
+                            throw new Error("Database setup issue");
+                        }
+                        if(game.p1_score > game.p2_score && game.p1_score > 3 && game.p1_score-game.p2_score > 1){    //win game
+                            console.log("P1 WINS THE GAME");
+                            q.end_game();
+                        }
                     }
+                    catch(Error){
+                        console.error(Error);
+                    }
+                    
                 });
-            });
+
+                });
             
         }
         else{   //p2
             q.p2Score(function(result){
                 console.log("P2 SCORED");
                 q.GetScore(function(game){
-                    if(game.p2_score > game.p1_score && game.p2_score > 3 && game.p2_score-game.p1_score > 1){    //win game
-                        console.log("P2 WINS THE GAME");
-                        q.end_game();
+                    try{
+                        if(game == null){
+                            throw new Error("Database setup issue");
+                        }
+                        if(game.p2_score > game.p1_score && game.p2_score > 3 && game.p2_score-game.p1_score > 1){    //win game
+                            console.log("P2 WINS THE GAME");
+                            q.end_game();
+                        }
+                    }
+                    catch(Error){
+                        console.error(Error);  
                     }
                 });
             });
         }
 }
+
